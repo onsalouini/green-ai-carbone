@@ -30,6 +30,7 @@ L’énergie est estimée à partir de la consommation du CPU, du GPU et de la R
 - Colab (serveur dans l’Iowa, États-Unis) : ≈ 295 g CO₂/kWh (valeur utilisée par CodeCarbon, voir section 1).
 
 - PC local en Tunisie : ≈ 483 g CO₂/kWh (LowCarbonPower, 2025 : électricité produite à près de 99 % à partir de gaz). Une autre source (Ember / Our World in Data) donne ≈ 560 g CO₂/kWh. Nous gardons 483 comme valeur de référence, et cet écart entre sources fait partie de l’incertitude.
+- - **Attention :** la région du serveur Colab change d'une session à l'autre (Iowa ≈ 295 g CO₂/kWh lors de notre test, Oregon ≈ 166 g CO₂/kWh lors des runs du modèle léger). C'est pourquoi nous comparons les modèles sur l'**énergie (kWh)**, puis nous recalculons les émissions avec une intensité commune.
 
 **PUE (énergie supplémentaire du datacenter : refroidissement, etc.)**
 
