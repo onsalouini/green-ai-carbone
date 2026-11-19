@@ -16,9 +16,9 @@
 ## Matériel
 
 - Plateforme : Kaggle Notebooks (accélérateur « GPU T4 x2 », **un seul GPU utilisé** via `CUDA_VISIBLE_DEVICES=0`)
-- GPU : **NVIDIA Tesla T4**, CPU x86_64, RAM 31,3 Go
-- Versions : torch 2.11.0+cu130, transformers 5.20.2, CodeCarbon (version Kaggle du jour)
-- Localisation détectée par CodeCarbon : latitude 41,26 (serveur aux États-Unis), PUE = 1,0 (valeur par défaut)
+- GPU : **NVIDIA Tesla T4**, CPU Intel Xeon @ 2,00 GHz (4 threads), RAM 31,3 Go
+- Versions : Python 3.13.16, torch 2.11.0+cu130, transformers 5.20.2, CodeCarbon 3.3.2
+- Localisation détectée par CodeCarbon : **Iowa, États-Unis** (−95,85 ; 41,26), PUE = 1,0 (valeur par défaut)
 
 ## Test court (séance 2, 19/11/2026) : 500 exemples train / 200 test
 
@@ -26,7 +26,16 @@
 |---|---|---|---|---|---|
 | 0,83 | 5,4 | 56,2 | 0,000563 | 0,162 | 1,8 (< 20 min ✔) |
 
-Source : `emissions.csv` et `resultats/kaggle/lourd_test_court.json` (sortie Kaggle).
+Source : `resultats/kaggle/emissions_lourd.csv` et `resultats/kaggle/lourd_test_court.json` (sortie Kaggle).
+
+Répartition de l'énergie (CodeCarbon) :
+
+| Composant | Puissance (W) | Énergie (kWh) | Part |
+|---|---|---|---|
+| RAM | 20,0 (forfait) | 0,000294 | 52 % |
+| GPU | 14,7 | 0,000244 | 43 % |
+| CPU | 1,7 | 0,000025 | 4 % |
+| **Total** | | **0,000563** | |
 
 ## Remarques
 
@@ -39,4 +48,10 @@ Source : `emissions.csv` et `resultats/kaggle/lourd_test_court.json` (sortie Kag
   Iowa retenue dans `docs/hypotheses.md` (≈ 295).
 - **Estimation du vrai run** (10 000 exemples, 1 époque) : ≈ 1,8 min d'entraînement, largement
   sous la limite des 20 min. Ce n'est qu'une extrapolation linéaire, à confirmer en séance 3.
+- **CodeCarbon compte les deux T4** (`gpu_count = 2`, « 2 x Tesla T4 ») alors que l'entraînement n'en
+  utilise qu'un : `CUDA_VISIBLE_DEVICES` ne limite pas ce que CodeCarbon lit via NVML. L'énergie GPU
+  inclut donc la consommation au repos du second T4 : elle est **surestimée**. À corriger avant le vrai
+  run (S3), par exemple `EmissionsTracker(..., gpu_ids=[0])` dans le code commun (décision d'équipe).
+- **La RAM pèse plus que le GPU** sur ce test court : sa puissance est un forfait CodeCarbon (20 W), pas
+  une mesure, comme l'a noté Boutheina pour Colab (10 W).
 - Accuracy de 0,83 sur 500 exemples seulement : à ne pas comparer au modèle léger, ce n'est pas un résultat.
