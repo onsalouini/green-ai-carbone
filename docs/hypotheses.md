@@ -16,7 +16,7 @@ Hypothèse :** les mesures faites sur Colab utilisent le réseau électrique de 
 
 Limite observée :** la puissance de la RAM est estimée de façon forfaitaire (10 W), il ne s’agit pas d’une mesure réelle.
 
-![Test CodeCarbon sur Colab](img/test_codecarbon.png)
+![Test CodeCarbon sur Colab](test_codecarbon.png)
 
 ## 2. Hypothèses de mesure
 
