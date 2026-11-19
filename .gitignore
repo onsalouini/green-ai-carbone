@@ -1,0 +1,21 @@
+# Environnements
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Sorties d'entraînement (lourdes)
+outputs/
+checkpoints/
+runs/
+*.safetensors
+*.bin
+
+# Divers
+.DS_Store
+.idea/
+.vscode/
+
+# Journaux de test locaux
+*.log
