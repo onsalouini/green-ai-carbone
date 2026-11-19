@@ -10,11 +10,11 @@ Nous avons validé CodeCarbon (v3.3.2) sur Google Colab avec un test de 20 s san
 
 Résultat : 0,000061 kWh consommés, soit 0,018 g CO₂eq.
 
-CodeCarbon détecte automatiquement la localisation du serveur : **Iowa (États-Unis)**. L’intensité carbone utilisée est donc d’environ **295 g CO₂/kWh** (calculée : émissions ÷ énergie = 0,000018 kg ÷ 0,000061 kWh).**
+CodeCarbon détecte automatiquement la localisation du serveur : **Iowa (États-Unis)**. L’intensité carbone utilisée est donc d’environ **295 g CO₂/kWh** (calculée : émissions ÷ énergie = 0,000018 kg ÷ 0,000061 kWh).
 
-Hypothèse :** les mesures faites sur Colab utilisent le réseau électrique de l’Iowa, et celles faites sur un PC en Tunisie utilisent le réseau tunisien (environ 483 g CO₂/kWh, source LowCarbonPower 2025). Pour comparer les deux modèles de façon équitable, nous comparerons d’abord l’**énergie (kWh)**, puis nous recalculerons les émissions avec **la même intensité carbone** pour les deux.**
+**Hypothèse :** les mesures faites sur Colab utilisent le réseau électrique de l’Iowa, et celles faites sur un PC en Tunisie utilisent le réseau tunisien (environ 483 g CO₂/kWh, source LowCarbonPower 2025). Pour comparer les deux modèles de façon équitable, nous comparerons d’abord l’**énergie (kWh)**, puis nous recalculerons les émissions avec **la même intensité carbone** pour les deux.
 
-Limite observée :** la puissance de la RAM est estimée de façon forfaitaire (10 W), il ne s’agit pas d’une mesure réelle.
+**Limite observée :** la puissance de la RAM est estimée de façon forfaitaire (10 W), il ne s’agit pas d’une mesure réelle.
 
 ![Test CodeCarbon sur Colab](test_codecarbon.png)
 
@@ -29,8 +29,11 @@ L’énergie est estimée à partir de la consommation du CPU, du GPU et de la R
 
 - Colab (serveur dans l’Iowa, États-Unis) : ≈ 295 g CO₂/kWh (valeur utilisée par CodeCarbon, voir section 1).
 
+- Kaggle (modèle lourd, serveur dans l’Iowa, États-Unis) : ≈ 288 g CO₂/kWh (0,162 g ÷ 0,000563 kWh, d’après `resultats/kaggle/emissions_lourd.csv`).
+
 - PC local en Tunisie : ≈ 483 g CO₂/kWh (LowCarbonPower, 2025 : électricité produite à près de 99 % à partir de gaz). Une autre source (Ember / Our World in Data) donne ≈ 560 g CO₂/kWh. Nous gardons 483 comme valeur de référence, et cet écart entre sources fait partie de l’incertitude.
-- - **Attention :** la région du serveur Colab change d'une session à l'autre (Iowa ≈ 295 g CO₂/kWh lors de notre test, Oregon ≈ 166 g CO₂/kWh lors des runs du modèle léger). C'est pourquoi nous comparons les modèles sur l'**énergie (kWh)**, puis nous recalculons les émissions avec une intensité commune.
+
+- **Attention :** la région du serveur Colab change d'une session à l'autre (Iowa ≈ 295 g CO₂/kWh lors de notre test, Oregon ≈ 166 g CO₂/kWh lors des runs du modèle léger). C'est pourquoi nous comparons les modèles sur l'**énergie (kWh)**, puis nous recalculons les émissions avec une intensité commune.
 
 **PUE (énergie supplémentaire du datacenter : refroidissement, etc.)**
 
@@ -38,9 +41,9 @@ L’énergie est estimée à partir de la consommation du CPU, du GPU et de la R
 
 - PC local : PUE = 1 (pas de datacenter).
 
-**Remarque :** CodeCarbon utilise par défaut un PUE de 1 (paramètre « pue » modifiable). Les mesures faites sur Colab sous-estiment donc légèrement la consommation réelle (d’environ 9 % avec un PUE de 1,09).**
+**Remarque :** CodeCarbon utilise par défaut un PUE de 1 (paramètre « pue » modifiable). Les mesures faites sur Colab sous-estiment donc légèrement la consommation réelle (d’environ 9 % avec un PUE de 1,09).
 
-Périmètre de la mesure**
+**Périmètre de la mesure**
 
 - Inclus : l’électricité consommée pendant l’entraînement et l’évaluation des modèles.
 
@@ -58,10 +61,10 @@ Périmètre de la mesure**
 
 |                                                           | Ali (modèle léger) | Ons (modèle lourd) |
 |-----------------------------------------------------------|--------------------|--------------------|
-| Machine                                                   | Google Colab, runtime CPU (serveur Oregon, États-Unis) |                    |
-| CPU / GPU                                                 | Intel Xeon @ 2,20 GHz (2 threads), pas de GPU |                    |
-| RAM                                                       | 12,7 Go            |                    |
-| Versions (Python, codecarbon, scikit-learn, transformers) | Python 3.13.18, codecarbon 3.3.2, scikit-learn 1.6.1, transformers non utilisé |                    |
+| Machine                                                   | Google Colab, runtime CPU (serveur Oregon, États-Unis) | Kaggle Notebooks, GPU (serveur Iowa, États-Unis) |
+| CPU / GPU                                                 | Intel Xeon @ 2,20 GHz (2 threads), pas de GPU | Intel Xeon @ 2,00 GHz (4 threads), 1 × NVIDIA Tesla T4 (2 présents, 1 seul utilisé) |
+| RAM                                                       | 12,7 Go            | 31,3 Go            |
+| Versions (Python, codecarbon, scikit-learn, transformers) | Python 3.13.18, codecarbon 3.3.2, scikit-learn 1.6.1, transformers non utilisé | Python 3.13.16, codecarbon 3.3.2, torch 2.11.0, transformers 5.20.2 |
 
 ## 3. Choix du jeu de données
 
@@ -75,7 +78,7 @@ AG News est un jeu de données public très utilisé pour tester les modèles de
 
 - Taille complète : 120 000 exemples d’entraînement et 7 600 de test (30 000 et 1 900 par classe, donc des classes équilibrées).
 
-- Accessible directement depuis Hugging Face (load_dataset("ag_news")).
+- Accessible directement depuis Hugging Face (load_dataset("fancyzhx/ag_news") ; l’ancien identifiant « ag_news » est refusé par les versions récentes de huggingface_hub).
 
 **Pourquoi ce choix**
 
@@ -85,11 +88,11 @@ AG News est un jeu de données public très utilisé pour tester les modèles de
 
 - **Classes équilibrées :** l’accuracy est une mesure fiable ici.
 
-- **Adapté aux deux modèles :** le modèle léger (TF-IDF + LogReg) et le modèle lourd (DistilBERT) peuvent tous les deux le traiter, donc la comparaison est juste.**
+- **Adapté aux deux modèles :** le modèle léger (TF-IDF + LogReg) et le modèle lourd (DistilBERT) peuvent tous les deux le traiter, donc la comparaison est juste.
 
 **Sous-ensemble utilisé**
 
-Nous utilisons 10 000 exemples d’entraînement et 2 000 de test, tirés au hasard avec seed = 42, pour respecter la contrainte de moins de 20 minutes par entraînement. Utiliser moins de données est aussi un choix de sobriété, dans l’esprit du projet.**
+Nous utilisons 10 000 exemples d’entraînement et 2 000 de test, tirés au hasard avec seed = 42, pour respecter la contrainte de moins de 20 minutes par entraînement. Utiliser moins de données est aussi un choix de sobriété, dans l’esprit du projet.
 
 **Licence**
 
@@ -109,17 +112,17 @@ Notre mesure ne couvre que l’**électricité consommée pendant l’entraînem
 
 - fin de vie (recyclage ou déchets).
 
-C’est ce qu’on appelle l’**empreinte « grise »** (ou intrinsèque) du matériel.**
+C’est ce qu’on appelle l’**empreinte « grise »** (ou intrinsèque) du matériel.
 
-Pourquoi elle est exclue de notre mesure**
+**Pourquoi elle est exclue de notre mesure**
 
 - Le cahier des charges limite le périmètre à l’usage.
 
 - Elle est difficile à mesurer : les fabricants publient peu de données précises.
 
-- Pour l’attribuer à notre entraînement, il faudrait la **répartir sur toute la durée de vie** du matériel : chaque heure de calcul porte une petite part de l’empreinte de fabrication. Cette répartition dépend de nombreuses hypothèses (durée de vie, taux d’utilisation, partage du serveur entre utilisateurs).**
+- Pour l’attribuer à notre entraînement, il faudrait la **répartir sur toute la durée de vie** du matériel : chaque heure de calcul porte une petite part de l’empreinte de fabrication. Cette répartition dépend de nombreuses hypothèses (durée de vie, taux d’utilisation, partage du serveur entre utilisateurs).
 
-Conséquences pour nos résultats**
+**Conséquences pour nos résultats**
 
 - Nos chiffres **sous-estiment l’empreinte réelle** des deux modèles.
 
@@ -139,6 +142,6 @@ Conséquences pour nos résultats**
 
 - PUE Google : datacenters.google/efficiency (1,09 en 2024 ; moyenne de l’industrie 1,56)
 
-- AG News : Zhang, Zhao & LeCun (2015), *Character-level Convolutional Networks for Text Classification* ; fiche Hugging Face « ag_news »
+- AG News : Zhang, Zhao & LeCun (2015), *Character-level Convolutional Networks for Text Classification* ; fiche Hugging Face « fancyzhx/ag_news »
 
 - Outil : CodeCarbon v3.3.2
