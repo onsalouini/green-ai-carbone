@@ -2,7 +2,7 @@
 
 | **Modèle**                     | **Accuracy (%)** | **Durée (s)** | **Énergie (kWh)** | **Émissions (g CO₂eq)** | **Matériel** |
 |--------------------------------|------------------|---------------|-------------------|-------------------------|--------------|
-| TF-IDF + Régression logistique |                  |               |                   |                         |              |
+| TF-IDF + Régression logistique | 88,4             | 12,0 ± 3,0    | 0,000054 ± 0,000015 | 0,0090 ± 0,0025       | Colab CPU Intel Xeon 2,20 GHz (Oregon) |
 | DistilBERT                     |                  |               |                   |                         |              |
 | Écart (lourd − léger)          |                  |               |                   |                         |              |
 

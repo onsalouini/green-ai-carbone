@@ -58,10 +58,10 @@ Périmètre de la mesure**
 
 |                                                           | Ali (modèle léger) | Ons (modèle lourd) |
 |-----------------------------------------------------------|--------------------|--------------------|
-| Machine                                                   |                    |                    |
-| CPU / GPU                                                 |                    |                    |
-| RAM                                                       |                    |                    |
-| Versions (Python, codecarbon, scikit-learn, transformers) |                    |                    |
+| Machine                                                   | Google Colab, runtime CPU (serveur Oregon, États-Unis) |                    |
+| CPU / GPU                                                 | Intel Xeon @ 2,20 GHz (2 threads), pas de GPU |                    |
+| RAM                                                       | 12,7 Go            |                    |
+| Versions (Python, codecarbon, scikit-learn, transformers) | Python 3.13.18, codecarbon 3.3.2, scikit-learn 1.6.1, transformers non utilisé |                    |
 
 ## 3. Choix du jeu de données
 
