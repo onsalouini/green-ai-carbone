@@ -29,11 +29,11 @@ L’énergie est estimée à partir de la consommation du CPU, du GPU et de la R
 
 - Colab (serveur dans l’Iowa, États-Unis) : ≈ 295 g CO₂/kWh (valeur utilisée par CodeCarbon, voir section 1).
 
-- Kaggle (modèle lourd, serveur dans l’Iowa, États-Unis) : ≈ 288 g CO₂/kWh (0,162 g ÷ 0,000563 kWh, d’après `resultats/kaggle/emissions_lourd.csv`).
+- Kaggle (modèle lourd, serveur dans l’Iowa, États-Unis) : ≈ 288 g CO₂/kWh, **intensité de référence retenue pour la comparaison** (0,162 g ÷ 0,000563 kWh, d’après `resultats/kaggle/emissions_lourd.csv`).
 
 - PC local en Tunisie : ≈ 483 g CO₂/kWh (LowCarbonPower, 2025 : électricité produite à près de 99 % à partir de gaz). Une autre source (Ember / Our World in Data) donne ≈ 560 g CO₂/kWh. Nous gardons 483 comme valeur de référence, et cet écart entre sources fait partie de l’incertitude.
 
-- **Attention :** la région du serveur Colab change d'une session à l'autre (Iowa ≈ 295 g CO₂/kWh lors de notre test, Oregon ≈ 166 g CO₂/kWh lors des runs du modèle léger). C'est pourquoi nous comparons les modèles sur l'**énergie (kWh)**, puis nous recalculons les émissions avec une intensité commune.
+- **Attention :** la région du serveur Colab change d'une session à l'autre (Iowa ≈ 295 g CO₂/kWh lors de notre test, Oregon ≈ 166 g CO₂/kWh lors des runs du modèle léger en S2, Nevada ≈ 292 g CO₂/kWh lors des 3 runs de la S3). C'est pourquoi nous comparons les modèles sur l'**énergie (kWh)**, puis nous recalculons les émissions avec une intensité commune.
 
 **PUE (énergie supplémentaire du datacenter : refroidissement, etc.)**
 
@@ -61,7 +61,7 @@ L’énergie est estimée à partir de la consommation du CPU, du GPU et de la R
 
 |                                                           | Ali (modèle léger) | Ons (modèle lourd) |
 |-----------------------------------------------------------|--------------------|--------------------|
-| Machine                                                   | Google Colab, runtime CPU (serveur Oregon, États-Unis) | Kaggle Notebooks, GPU (serveur Iowa, États-Unis) |
+| Machine                                                   | Google Colab, runtime CPU (serveur Nevada, États-Unis, en S3 ; Oregon en S2) | Kaggle Notebooks, GPU (serveur Iowa, États-Unis) |
 | CPU / GPU                                                 | Intel Xeon @ 2,20 GHz (2 threads), pas de GPU | Intel Xeon @ 2,00 GHz (4 threads), 1 × NVIDIA Tesla T4 (2 présents, 1 seul utilisé) |
 | RAM                                                       | 12,7 Go            | 31,3 Go            |
 | Versions (Python, codecarbon, scikit-learn, transformers) | Python 3.13.18, codecarbon 3.3.2, scikit-learn 1.6.1, transformers non utilisé | Python 3.13.16, codecarbon 3.3.2, torch 2.11.0, transformers 5.20.2 |

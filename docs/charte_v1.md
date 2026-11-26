@@ -7,7 +7,7 @@ Séance 3 · 26/11/2026 · relecture : Ghayth
 Elles s'appuient sur nos mesures (AG News, TF-IDF + régression logistique contre DistilBERT, CodeCarbon).*
 
 > Chiffres tirés du tableau comparatif (`docs/tableau_comparatif.md`) : TF-IDF + LogReg 88,40 %,
-> 0,054 Wh ; DistilBERT 90,45 %, 0,791 Wh (3 runs, Kaggle T4). Intensité de référence : 288 g CO₂/kWh (Iowa).
+> 0,040 Wh ; DistilBERT 90,45 %, 0,791 Wh (3 runs chacun). Intensité de référence : 288 g CO₂/kWh (Iowa).
 
 ---
 
@@ -17,8 +17,8 @@ Chaque entraînement est suivi avec CodeCarbon (ou un outil équivalent). L'éne
 émissions (g CO₂eq) sont écrites dans le rapport, à côté de la performance (accuracy).
 
 - **Pourquoi (nos résultats) :** sans mesure, on ne voit pas l'écart réel entre les modèles.
-  Dans notre cas, DistilBERT consomme **14,6 fois plus d'énergie** que la régression logistique
-  (0,791 Wh contre 0,054 Wh) pour la même tâche.
+  Dans notre cas, DistilBERT consomme **19,9 fois plus d'énergie** que la régression logistique
+  (0,791 Wh contre 0,040 Wh) pour la même tâche.
 - **Vérifiable :** un fichier `emissions.csv` existe pour chaque expérience et ses valeurs
   figurent dans le rapport.
 
@@ -30,8 +30,8 @@ lourd que si le **coût carbone par point de précision gagné** reste sous un s
 Coût carbone par point = (Émissions lourd − Émissions léger) ÷ (Accuracy lourd − Accuracy léger)
 
 - **Pourquoi (nos résultats) :** DistilBERT gagne seulement **2,05 points** d'accuracy (90,45 % contre
-  88,40 %) pour **14,6 fois plus d'énergie**. Chaque point gagné coûte **≈ 0,10 g CO₂eq** à 288 g/kWh
-  (0,17 g à 483 g/kWh, 0,20 g à 560 g/kWh), soit environ 7 fois l'entraînement complet du modèle léger.
+  88,40 %) pour **19,9 fois plus d'énergie**. Chaque point gagné coûte **≈ 0,11 g CO₂eq** à 288 g/kWh
+  (0,18 g à 483 g/kWh, 0,21 g à 560 g/kWh), soit environ 9 fois l'entraînement complet du modèle léger.
   Et avec 2 000 exemples de test, ce gain est incertain : 2,05 ± 1,9 points (IC 95 %).
 - **Critère proposé par l'équipe (à valider) :** on garde le modèle lourd seulement si (1) le gain
   d'accuracy dépasse la marge d'erreur du test (borne basse de l'IC 95 % > 0) et (2) ce gain est utile
@@ -70,7 +70,8 @@ région dont l'électricité est peu carbonée et on réutilise des modèles pr�
 
 - **Pourquoi (nos résultats) :** pour la même énergie, l'intensité carbone varie de 166 g CO₂/kWh
   (Oregon) à 560 g CO₂/kWh (Tunisie, valeur utilisée par CodeCarbon) : le modèle léger émet
-  3,4 fois plus en Tunisie qu'en Oregon (test de reproductibilité de Ghayth). Entre le meilleur et
+  3,4 fois plus en Tunisie qu'en Oregon (test de reproductibilité de Ghayth). Et la région Colab
+  change d'une session à l'autre : Oregon en S2, Nevada en S3. Entre le meilleur et
   le pire cas, le coût carbone par point varie d'un facteur 59 (`docs/sensibilite.md`).
 - **Vérifiable :** chaque résultat indique la région, l'intensité carbone, le PUE, le matériel,
   la taille du test et une fourchette.
