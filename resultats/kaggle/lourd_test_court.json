@@ -3,8 +3,8 @@
   "accuracy": 0.83,
   "n_train": 500,
   "n_test": 200,
-  "duree_entrainement_s": 5.4,
-  "estimation_vrai_run_min": 1.8,
+  "duree_entrainement_s": 3.5,
+  "estimation_vrai_run_min": 1.2,
   "respecte_limite_20_min": true,
   "hyperparametres": {
     "model_name": "distilbert-base-uncased",
@@ -21,17 +21,5 @@
     "torch": "2.11.0+cu130",
     "gpu": "Tesla T4"
   },
-  "transformers": "5.20.2",
-  "codecarbon": {
-    "timestamp": "2026-11-19T14:33:15",
-    "duration_s": 56.17367,
-    "energy_consumed_kwh": 0.0005630327795182,
-    "emissions_kg": 0.000162,
-    "cpu_power_w": 1.712718,
-    "gpu_power_w": 14.666006,
-    "ram_power_w": 20.0,
-    "ram_total_size_gb": 31.346592,
-    "latitude": 41.2591,
-    "pue": 1.0
-  }
+  "transformers": "5.20.2"
 }

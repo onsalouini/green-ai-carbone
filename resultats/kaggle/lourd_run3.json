@@ -1,0 +1,25 @@
+{
+  "nom": "lourd_run3",
+  "accuracy": 0.9045,
+  "n_train": 10000,
+  "n_test": 2000,
+  "duree_entrainement_s": 29.5,
+  "estimation_vrai_run_min": 0.5,
+  "respecte_limite_20_min": true,
+  "hyperparametres": {
+    "model_name": "distilbert-base-uncased",
+    "num_labels": 4,
+    "epochs": 1,
+    "batch_size": 16,
+    "learning_rate": 5e-05,
+    "weight_decay": 0.01,
+    "max_length": 128
+  },
+  "materiel": {
+    "device": "cuda",
+    "cpu": "x86_64",
+    "torch": "2.11.0+cu130",
+    "gpu": "Tesla T4"
+  },
+  "transformers": "5.20.2"
+}
