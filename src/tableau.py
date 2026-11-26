@@ -29,7 +29,7 @@ RACINE = Path(__file__).resolve().parent.parent
 # on recalcule les émissions des deux modèles avec la MÊME intensité.
 INTENSITES: dict[str, float] = {
     "Tunisie": 483.0,  # LowCarbonPower 2025
-    "Iowa": 295.0,     # Colab, mesuré par CodeCarbon (séance 2)
+    "Iowa": 288.0,     # Kaggle (runs d'Ons), mesuré par CodeCarbon : référence de l'équipe
 }
 PUE_DEFAUT = 1.0       # valeur CodeCarbon ; option --pue 1.09 (datacenters Google 2024)
 

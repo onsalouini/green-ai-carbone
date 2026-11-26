@@ -11,11 +11,11 @@ Moyenne ± écart-type sur les runs : 3 runs pour TF-IDF + Régression logistiqu
 
 ## Émissions à intensité commune (énergie × intensité)
 
-| Modèle | Tunisie (483 g/kWh) | Iowa (295 g/kWh) |
+| Modèle | Tunisie (483 g/kWh) | Iowa (288 g/kWh) |
 |---|---|---|
-| TF-IDF + Régression logistique | 0,0192 ± 0,0014 | 0,0117 ± 0,0009 |
-| DistilBERT | 0,3822 ± 0,0176 | 0,2334 ± 0,0108 |
-| Écart (lourd − léger) | + 0,3630 (× 19,9) | + 0,2217 (× 19,9) |
+| TF-IDF + Régression logistique | 0,0192 ± 0,0014 | 0,0114 ± 0,0009 |
+| DistilBERT | 0,3822 ± 0,0176 | 0,2279 ± 0,0105 |
+| Écart (lourd − léger) | + 0,3630 (× 19,9) | + 0,2164 (× 19,9) |
 
 Valeurs en g CO₂eq par run (moyenne ± écart-type).
 
@@ -26,6 +26,6 @@ Coût = (CO₂ lourd − CO₂ léger) ÷ (accuracy lourd − accuracy léger), 
 | Intensité commune | Coût (g CO₂eq / point) |
 |---|---|
 | Tunisie (483 g/kWh) | 0,177 |
-| Iowa (295 g/kWh) | 0,108 |
+| Iowa (288 g/kWh) | 0,106 |
 
 Gain d'accuracy : 2,05 points ; énergie en plus : 0,751 Wh ; ratio d'énergie lourd / léger : **× 19,9**.
