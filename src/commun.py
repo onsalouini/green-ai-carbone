@@ -19,8 +19,13 @@ def load_data(n_train=10_000, n_test=2_000, seed=SEED):
     return train, test  # colonnes : "text", "label" (4 classes)
 
 
-def mesurer(nom, fonction_entrainement):
-    tracker = EmissionsTracker(project_name=nom, output_file="emissions.csv")
+def mesurer(nom, fonction_entrainement, **options_tracker):
+    # Séance 3 : mesure chaque seconde (comme Ali et Ghayth, entraînements courts) ;
+    # options_tracker permet en plus de choisir le fichier de sortie et les GPU mesurés
+    # (ex. gpu_ids=[0] sur Kaggle, où CodeCarbon compte sinon le 2e T4 inutilisé).
+    options = {"project_name": nom, "output_file": "emissions.csv", "measure_power_secs": 1}
+    options.update(options_tracker)
+    tracker = EmissionsTracker(**options)
     tracker.start()
     accuracy = fonction_entrainement()
     kg = tracker.stop()

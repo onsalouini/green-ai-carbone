@@ -3,13 +3,14 @@
 Chaîne complète : données (code commun) -> DistilBERT (HF Trainer) -> accuracy
 -> emissions.csv (CodeCarbon, via mesurer()).
 
-À lancer sur Colab avec un GPU T4 (notebooks/lourd_distilbert_colab.ipynb), ou :
+À lancer sur Kaggle avec un GPU T4 (notebooks/lourd_distilbert_kaggle.ipynb) :
 
-    python -m src.modele_lourd --test-court     # ~500 exemples : valide la mesure
-    python -m src.modele_lourd                  # vrai run : 10 000 / 2 000
+    python -m src.modele_lourd --test-court     # 500 exemples : valide la mesure
+    python -m src.modele_lourd --runs 3         # vrais runs lourd_run1..3 : 10 000 / 2 000
 
-Chaque run écrit aussi resultats/<nom>.json : accuracy, durée, GPU, hyperparamètres,
-et l'estimation de durée du vrai run (pour vérifier la contrainte < 20 min).
+Sorties dans resultats/kaggle/ (format lu par src/reproductibilite.py et src/sensibilite.py) :
+- emissions_lourd.csv : une ligne CodeCarbon par run (project_name = lourd_test_court, lourd_run1…) ;
+- <nom>.json : accuracy, durée, GPU, hyperparamètres, estimation de durée du vrai run.
 """
 
 from __future__ import annotations
@@ -36,6 +37,8 @@ HEAVY_PARAMS: dict[str, Any] = {
 
 N_TRAIN_VRAI_RUN = 10_000
 LIMITE_MINUTES = 20
+DOSSIER_SORTIE = "resultats/kaggle"
+FICHIER_EMISSIONS = "emissions_lourd.csv"
 
 
 def infos_materiel() -> dict[str, Any]:
@@ -59,7 +62,7 @@ def train_heavy(
     n_test: int | None = None,
     params: dict[str, Any] | None = None,
     nom: str = "lourd",
-    dossier_resultats: str = "resultats",
+    dossier_resultats: str = DOSSIER_SORTIE,
 ) -> float:
     """Fine-tune DistilBERT sur `train`, renvoie l'accuracy sur `test`.
 
@@ -150,15 +153,37 @@ def main() -> None:
     parser.add_argument(
         "--test-court", action="store_true", help="500 exemples train / 200 test"
     )
+    parser.add_argument(
+        "--runs", type=int, default=1, help="nombre de vrais runs (lourd_run1, lourd_run2…)"
+    )
+    parser.add_argument("--premier", type=int, default=1, help="numéro du premier run")
     args = parser.parse_args()
+
+    import torch
+
+    Path(DOSSIER_SORTIE).mkdir(parents=True, exist_ok=True)
+    options_tracker: dict[str, Any] = {
+        "output_dir": DOSSIER_SORTIE,
+        "output_file": FICHIER_EMISSIONS,
+    }
+    if torch.cuda.is_available():
+        # Ne mesurer que le GPU qui calcule (Kaggle en fournit deux).
+        options_tracker["gpu_ids"] = [0]
 
     train, test = load_data()
     if args.test_court:
-        nom, n_train, n_test = "lourd_test_court", 500, 200
+        taches = [("lourd_test_court", 500, 200)]
     else:
-        nom, n_train, n_test = "lourd", None, None
+        taches = [
+            (f"lourd_run{i}", None, None) for i in range(args.premier, args.premier + args.runs)
+        ]
 
-    mesurer(nom, lambda: train_heavy(train, test, n_train, n_test, nom=nom))
+    for nom, n_train, n_test in taches:
+        mesurer(
+            nom,
+            lambda: train_heavy(train, test, n_train, n_test, nom=nom),
+            **options_tracker,
+        )
 
 
 if __name__ == "__main__":
