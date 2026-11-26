@@ -1,0 +1,15 @@
+{
+  "machine": "pc_ghayth",
+  "accuracies": [
+    0.884,
+    0.884,
+    0.884,
+    0.884,
+    0.884
+  ],
+  "os": "Windows-10-10.0.26300-SP0",
+  "cpu": "AMD64 Family 25 Model 68 Stepping 1, AuthenticAMD",
+  "python": "3.11.9",
+  "scikit-learn": "1.9.1",
+  "codecarbon": "3.3.3"
+}
