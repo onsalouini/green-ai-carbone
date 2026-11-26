@@ -1,0 +1,33 @@
+{
+  "nom": "leger_run2",
+  "accuracy": 0.884,
+  "n_train": 10000,
+  "n_test": 2000,
+  "duree_entrainement_s": 8.6,
+  "respecte_limite_20_min": true,
+  "mesures_codecarbon": {
+    "duree_s": 8.559060449000071,
+    "energie_kwh": 3.6754421173931215e-05,
+    "emissions_g": 0.010734111420294333,
+    "pays": "United States",
+    "region": "nevada"
+  },
+  "hyperparametres": {
+    "max_features": 50000,
+    "ngram_range": [
+      1,
+      2
+    ],
+    "sublinear_tf": true,
+    "max_iter": 1000,
+    "random_state": 42
+  },
+  "materiel": {
+    "device": "cpu",
+    "cpu": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+    "ram_go": 12.7,
+    "python": "3.13.18"
+  },
+  "scikit-learn": "1.6.1",
+  "codecarbon": "3.3.3"
+}

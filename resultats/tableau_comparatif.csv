@@ -1,0 +1,7 @@
+﻿modele,n_runs,accuracy_pct_moy,accuracy_pct_et,duree_s_moy,duree_s_et,energie_kwh_moy,energie_kwh_et,emissions_mesurees_g_moy,emissions_mesurees_g_et,emissions_tunisie_g_moy,emissions_iowa_g_moy,materiel,valeur
+TF-IDF + Régression logistique,3,88.4,0,8.99393,0.398787,3.97467e-05,2.95307e-06,0.011608,0.000862443,0.0191977,0.0117253,CPU Intel(R) Xeon(R) CPU @ 2.20GHz (nevada),
+DistilBERT,3,90.45,0,34.2476,4.08483,0.000791219,3.64576e-05,0.227593,0.010487,0.382159,0.23341,GPU Tesla T4 + CPU Intel(R) Xeon(R) CPU @ 2.00GHz (iowa),
+Écart (lourd − léger),,2.05,,25.2536,,0.000751472,,0.215985,,0.362961,0.221684,,
+Ratio énergie (lourd / léger),,,,,,,,,,,,,19.9065
+Coût par point Tunisie (g CO2eq / point),,,,,,,,,,,,,0.177054
+Coût par point Iowa (g CO2eq / point),,,,,,,,,,,,,0.108139
