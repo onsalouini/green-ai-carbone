@@ -15,6 +15,8 @@ On sépare deux choses :
 Le modèle léger d'Ali (TF-IDF + régression logistique) est relancé **à l'identique** sur une autre
 machine : même code (recopié du notebook `leger_tfidf_colab.ipynb`), mêmes données (`load_data()`, seed 42),
 même mesure (CodeCarbon, `measure_power_secs=1`), un échauffement non mesuré puis 5 runs mesurés.
+Le code commun `mesurer()` mesure désormais lui aussi toutes les secondes. Ali le faisait déjà dans
+son notebook, et cette relance aussi : la comparaison reste valable.
 
 ```bash
 python -m src.reproductibilite --relancer-leger 5 --machine pc_ghayth   # relance + analyse
@@ -75,8 +77,9 @@ GPU ≈ 15 %, **alors que le GPU ne sert pas**.
 
 4. **CodeCarbon compte les GPU présents, même inutilisés.** La RTX 2050 au repos (7 à 12 W) est
    ajoutée à la mesure d'un modèle qui tourne sur CPU. C'est le même biais que le 2ᵉ T4 de Kaggle
-   relevé par Ons. Correction possible (décision d'équipe, `src/commun.py`) :
-   `EmissionsTracker(..., gpu_ids=[])` pour le modèle léger et `gpu_ids=[0]` pour le lourd.
+   relevé par Ons. Ons a corrigé le code commun avec `gpu_ids=[0]` : les nouveaux runs DistilBERT
+   ne comptent plus le second T4. Pour le modèle léger, la même idée donnerait `gpu_ids=[]` sur une
+   machine équipée d'un GPU inutilisé (à décider en équipe).
 
 5. **CodeCarbon utilise 560 g CO₂/kWh pour la Tunisie, et non 483.** C'est la valeur Ember / Our World
    in Data, alors que `hypotheses.md` retient 483 (LowCarbonPower) comme référence. Il faut le signaler dans

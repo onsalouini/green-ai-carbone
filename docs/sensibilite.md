@@ -42,6 +42,10 @@ scénario de référence, et on mesure l'écart sur l'indicateur.
 | RAM : forfait CodeCarbon | retiré → conservé | 0,34 | 0,44 | − 23 % |
 | 2ᵉ T4 au repos compté par CodeCarbon | retiré (≈ 10 W) → conservé | 0,39 | 0,44 | − 12 % |
 
+*Ligne « 2ᵉ T4 » :* elle ne concerne que les mesures prises avant la correction d'Ons. Le code commun
+mesure désormais avec `gpu_ids=[0]`, donc CodeCarbon ne voit plus le second T4. Le script
+détecte ces runs (`gpu_count = 1`) et n'affiche alors plus cette ligne.
+
 **Tous les choix favorables combinés : 0,07 g / point. Tous défavorables : 3,97 g / point. Rapport : × 59.**
 
 ## Ce qu'il faut retenir
@@ -59,7 +63,7 @@ scénario de référence, et on mesure l'écart sur l'indicateur.
    l'écart est faible.
 
 3. **La fabrication du matériel n'est pas un détail.** Même avec des hypothèses prudentes, l'amortir
-   ajoute entre 25 % et 180 % au coût par point (détails dans `fabrication_materiel.md`). Elle est
+   ajoute entre 33 % et 180 % au coût par point (détails dans `fabrication_materiel.md`). Elle est
    exclue du périmètre officiel, mais il faut le dire.
 
 4. **Les forfaits et biais de CodeCarbon (RAM, GPU au repos) jouent moins** (≈ 10–25 %). Ils

@@ -49,7 +49,7 @@ détaillées (c'est justement une raison de l'exclusion).
 
 2. **Elle pénalise surtout le modèle lourd en valeur absolue.** Un GPU coûte cher à fabriquer, et le run
    lourd l'occupe ≈ 15 fois plus longtemps que le run léger n'occupe un CPU. Inclure la fabrication
-   **augmente l'écart** entre les deux modèles, et donc le coût par point (+ 25 % à + 180 %,
+   **augmente l'écart** entre les deux modèles, et donc le coût par point (+ 33 % à + 180 %,
    voir `sensibilite.md`). Notre conclusion « le léger est plus sobre » est donc **prudente** : la
    réalité est encore plus nette.
 
@@ -74,7 +74,7 @@ détaillées (c'est justement une raison de l'exclusion).
 - **Prolonger la durée de vie du matériel** : passer de 4 à 6 ans réduit d'un tiers la fabrication
   attribuée à chaque heure de calcul.
 - **Dans le rapport, toujours écrire que la fabrication est exclue**, et donner un ordre de grandeur
-  (ex. « + 25 à 180 % »), pour que le lecteur ne prenne pas nos chiffres pour l'empreinte totale.
+  (ex. « + 33 à 180 % »), pour que le lecteur ne prenne pas nos chiffres pour l'empreinte totale.
 
 ## Sources
 

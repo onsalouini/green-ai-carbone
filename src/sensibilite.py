@@ -53,6 +53,8 @@ class Scenario:
     e_ram_lourd_kwh: float = 0.0
     # Puissance au repos du 2e T4 comptée à tort par CodeCarbon (W), retirée du lourd
     gpu_fantome_w: float = 0.0
+    # False si les runs lourds sont mesurés avec gpu_ids=[0] : rien à retirer
+    gpu_fantome_present: bool = True
     duree_lourd_s: float = 0.0
     # Fabrication amortie (g CO2eq par run), hors périmètre officiel
     fab_leger_g: float = 0.0
@@ -91,6 +93,7 @@ def charger(e_lourd_wh: float | None, acc_lourd: float | None) -> tuple[Scenario
         if "test_court" not in f.name
     ]
 
+    gpu_fantome_present = True
     if e_lourd_wh is not None or lourd.empty:
         source = "SCÉNARIO PROVISOIRE (vrais runs DistilBERT pas encore disponibles)"
         e = (e_lourd_wh or PROVISOIRE_E_WH) / 1000
@@ -98,6 +101,8 @@ def charger(e_lourd_wh: float | None, acc_lourd: float | None) -> tuple[Scenario
         duree = 170.0
         e_ram = 20 * duree / 3.6e6
     else:
+        # Avec gpu_ids=[0] (code commun corrigé par Ons), CodeCarbon ne voit plus le 2e T4.
+        gpu_fantome_present = bool((lourd["gpu_count"] > 1).any())
         e, e_ram, duree = (
             lourd["energy_consumed"].mean(),
             lourd["ram_energy"].mean(),
@@ -116,6 +121,7 @@ def charger(e_lourd_wh: float | None, acc_lourd: float | None) -> tuple[Scenario
             e_ram_leger_kwh=leger["ram_energy"].mean(),
             e_ram_lourd_kwh=e_ram,
             duree_lourd_s=duree,
+            gpu_fantome_present=gpu_fantome_present,
         ),
         source,
     )
@@ -136,7 +142,13 @@ def variations(ref: Scenario) -> list[tuple[str, str, Scenario, Scenario]]:
         / N_TEST
     )
     d = ref.duree_lourd_s
-    return [
+    gpu_fantome = (
+        [("2e T4 au repos compté par CodeCarbon", "retiré (≈ 10 W) → gardé",
+          replace(ref, gpu_fantome_w=10.0), ref)]
+        if ref.gpu_fantome_present
+        else []  # runs mesurés avec gpu_ids=[0] : biais déjà corrigé à la source
+    )
+    return gpu_fantome + [
         ("Intensité carbone du réseau", "166 (Oregon) → 560 g/kWh (Tunisie, Ember)",
          replace(ref, intensite=166), replace(ref, intensite=560)),
         ("Gain d'accuracy (± 1 erreur-type, n = 2 000)", f"Δacc ± {se:.2f} pt",
@@ -148,8 +160,6 @@ def variations(ref: Scenario) -> list[tuple[str, str, Scenario, Scenario]]:
                       fab_leger_g=fabrication_g(2500 * 2 / 96, 4, 0.5, 12))),
         ("RAM : forfait CodeCarbon conservé", "0 % → 100 % du forfait",
          replace(ref, facteur_ram=0.0), ref),
-        ("2e T4 au repos compté par CodeCarbon", "retiré (≈ 10 W) → gardé",
-         replace(ref, gpu_fantome_w=10.0), ref),
         ("Variabilité de la mesure d'énergie lourde", "± 28 % (CV max observé)",
          replace(ref, e_lourd_kwh=ref.e_lourd_kwh * 0.72), replace(ref, e_lourd_kwh=ref.e_lourd_kwh * 1.28)),
     ]
@@ -182,10 +192,13 @@ def main() -> None:
         print(f"| {nom} | {bornes} | {cb:.3f} | {ch:.3f} | ±{100 * amp / c0:.0f} % |")
 
     # Pire et meilleur cas combinés
-    se_tbl = variations(ref)
-    meilleur = replace(ref, intensite=166, pue=1.0, facteur_ram=0.0, gpu_fantome_w=10.0,
-                       acc_lourd=se_tbl[1][2].acc_lourd, e_lourd_kwh=ref.e_lourd_kwh * 0.72)
-    pire = replace(se_tbl[3][3], intensite=560, pue=1.56, acc_lourd=se_tbl[1][3].acc_lourd,
+    v = {nom: (bas, haut) for nom, _, bas, haut in variations(ref)}
+    acc_bas, acc_haut = v["Gain d'accuracy (± 1 erreur-type, n = 2 000)"]
+    fab_haut = v["Fabrication du matériel incluse"][1]
+    meilleur = replace(ref, intensite=166, pue=1.0, facteur_ram=0.0,
+                       gpu_fantome_w=10.0 if ref.gpu_fantome_present else 0.0,
+                       acc_lourd=acc_bas.acc_lourd, e_lourd_kwh=ref.e_lourd_kwh * 0.72)
+    pire = replace(fab_haut, intensite=560, pue=1.56, acc_lourd=acc_haut.acc_lourd,
                    e_lourd_kwh=ref.e_lourd_kwh * 1.28)
     print(f"\nTout favorable  : {meilleur.cout_par_point():.3f} g CO2eq / point")
     print(f"Tout défavorable: {pire.cout_par_point():.3f} g CO2eq / point")
