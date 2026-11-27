@@ -56,6 +56,9 @@ class Scenario:
     # False si les runs lourds sont mesurés avec gpu_ids=[0] : rien à retirer
     gpu_fantome_present: bool = True
     duree_lourd_s: float = 0.0
+    duree_leger_s: float = 0.0
+    # Coefficient de variation observé sur l'énergie du lourd (écart-type / moyenne)
+    cv_lourd: float = 0.28
     # Fabrication amortie (g CO2eq par run), hors périmètre officiel
     fab_leger_g: float = 0.0
     fab_lourd_g: float = 0.0
@@ -80,6 +83,10 @@ class Scenario:
 def charger(e_lourd_wh: float | None, acc_lourd: float | None) -> tuple[Scenario, str]:
     leger = pd.read_csv(RACINE / "resultats/emissions_leger.csv")
     leger = leger[leger["project_name"].str.startswith("leger_run")]
+    accs_leger = [
+        json.loads(f.read_text(encoding="utf-8"))["accuracy"] * 100
+        for f in (RACINE / "resultats").glob("leger_run*.json")
+    ]
 
     source = "mesures d'Ons (Kaggle T4)"
     lourd = pd.read_csv(RACINE / "resultats/kaggle/emissions_lourd.csv")
@@ -94,6 +101,7 @@ def charger(e_lourd_wh: float | None, acc_lourd: float | None) -> tuple[Scenario
     ]
 
     gpu_fantome_present = True
+    cv_lourd = 0.28  # scénario provisoire : CV max observé sur Colab en S2
     if e_lourd_wh is not None or lourd.empty:
         source = "SCÉNARIO PROVISOIRE (vrais runs DistilBERT pas encore disponibles)"
         e = (e_lourd_wh or PROVISOIRE_E_WH) / 1000
@@ -102,7 +110,10 @@ def charger(e_lourd_wh: float | None, acc_lourd: float | None) -> tuple[Scenario
         e_ram = 20 * duree / 3.6e6
     else:
         # Avec gpu_ids=[0] (code commun corrigé par Ons), CodeCarbon ne voit plus le 2e T4.
+        # Attention : vérifier avec Ons si gpu_count reste à 2 malgré gpu_ids=[0].
         gpu_fantome_present = bool((lourd["gpu_count"] > 1).any())
+        if len(lourd) > 1:
+            cv_lourd = lourd["energy_consumed"].std() / lourd["energy_consumed"].mean()
         e, e_ram, duree = (
             lourd["energy_consumed"].mean(),
             lourd["ram_energy"].mean(),
@@ -116,11 +127,13 @@ def charger(e_lourd_wh: float | None, acc_lourd: float | None) -> tuple[Scenario
         Scenario(
             e_leger_kwh=leger["energy_consumed"].mean(),
             e_lourd_kwh=e,
-            acc_leger=88.40,
+            acc_leger=sum(accs_leger) / len(accs_leger) if accs_leger else 88.40,
             acc_lourd=acc,
             e_ram_leger_kwh=leger["ram_energy"].mean(),
             e_ram_lourd_kwh=e_ram,
             duree_lourd_s=duree,
+            duree_leger_s=leger["duration"].mean(),
+            cv_lourd=cv_lourd,
             gpu_fantome_present=gpu_fantome_present,
         ),
         source,
@@ -157,11 +170,12 @@ def variations(ref: Scenario) -> list[tuple[str, str, Scenario, Scenario]]:
          replace(ref, pue=1.0), replace(ref, pue=1.56)),
         ("Fabrication du matériel incluse", "0 → amortissement haut",
          ref, replace(ref, fab_lourd_g=fabrication_g(150 + 2500 / 4, 4, 0.5, d),
-                      fab_leger_g=fabrication_g(2500 * 2 / 96, 4, 0.5, 12))),
+                      fab_leger_g=fabrication_g(2500 * 2 / 96, 4, 0.5, ref.duree_leger_s))),
         ("RAM : forfait CodeCarbon conservé", "0 % → 100 % du forfait",
          replace(ref, facteur_ram=0.0), ref),
-        ("Variabilité de la mesure d'énergie lourde", "± 28 % (CV max observé)",
-         replace(ref, e_lourd_kwh=ref.e_lourd_kwh * 0.72), replace(ref, e_lourd_kwh=ref.e_lourd_kwh * 1.28)),
+        ("Variabilité de la mesure d'énergie lourde", f"± 2 CV = ± {200 * ref.cv_lourd:.0f} % (runs observés)",
+         replace(ref, e_lourd_kwh=ref.e_lourd_kwh * (1 - 2 * ref.cv_lourd)),
+         replace(ref, e_lourd_kwh=ref.e_lourd_kwh * (1 + 2 * ref.cv_lourd))),
     ]
 
 
@@ -197,9 +211,9 @@ def main() -> None:
     fab_haut = v["Fabrication du matériel incluse"][1]
     meilleur = replace(ref, intensite=166, pue=1.0, facteur_ram=0.0,
                        gpu_fantome_w=10.0 if ref.gpu_fantome_present else 0.0,
-                       acc_lourd=acc_bas.acc_lourd, e_lourd_kwh=ref.e_lourd_kwh * 0.72)
+                       acc_lourd=acc_bas.acc_lourd, e_lourd_kwh=ref.e_lourd_kwh * (1 - 2 * ref.cv_lourd))
     pire = replace(fab_haut, intensite=560, pue=1.56, acc_lourd=acc_haut.acc_lourd,
-                   e_lourd_kwh=ref.e_lourd_kwh * 1.28)
+                   e_lourd_kwh=ref.e_lourd_kwh * (1 + 2 * ref.cv_lourd))
     print(f"\nTout favorable  : {meilleur.cout_par_point():.3f} g CO2eq / point")
     print(f"Tout défavorable: {pire.cout_par_point():.3f} g CO2eq / point")
     print(f"Rapport max/min : × {pire.cout_par_point() / meilleur.cout_par_point():.0f}")
@@ -208,12 +222,18 @@ def main() -> None:
     for nom, fab, vie, u, duree, e_wh in [
         ("lourd · T4 + 1/4 serveur (Kaggle)", 150 + 2500 / 4, 4, 0.5, ref.duree_lourd_s, ref.e_lourd_kwh * 1000),
         ("lourd · bas : T4 + 1/8 serveur, 6 ans, 85 %", 50 + 2500 / 8, 6, 0.85, ref.duree_lourd_s, ref.e_lourd_kwh * 1000),
-        ("léger · 2 vCPU / 96 d'un serveur (Colab)", 2500 * 2 / 96, 4, 0.5, 12.0, ref.e_leger_kwh * 1000),
+        ("léger · 2 vCPU / 96 d'un serveur (Colab)", 2500 * 2 / 96, 4, 0.5, ref.duree_leger_s, ref.e_leger_kwh * 1000),
         ("léger · PC portable (Ghayth)", 250, 4, 0.2, 7.1, 0.0537),
     ]:
         g = fabrication_g(fab, vie, u, duree)
         usage = e_wh / 1000 * ref.intensite
         print(f"  {nom:<45} fabrication {g:.4f} g | usage {usage:.4f} g | part fabrication {100 * g / (g + usage):.0f} %")
+
+    fab_bas = replace(ref, fab_lourd_g=fabrication_g(50 + 2500 / 8, 6, 0.85, ref.duree_lourd_s),
+                      fab_leger_g=fabrication_g(2500 * 2 / 96, 6, 0.85, ref.duree_leger_s))
+    print(f"\nCoût par point avec fabrication : bas {fab_bas.cout_par_point():.3f} "
+          f"(+{100 * (fab_bas.cout_par_point() / c0 - 1):.0f} %) | haut {fab_haut.cout_par_point():.3f} "
+          f"(+{100 * (fab_haut.cout_par_point() / c0 - 1):.0f} %)")
 
 
 if __name__ == "__main__":

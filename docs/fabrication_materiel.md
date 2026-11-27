@@ -33,13 +33,14 @@ détaillées (c'est justement une raison de l'exclusion).
 
 | Cas | Fabrication attribuée (g) | Usage mesuré (g) | Part de la fabrication |
 |---|---|---|---|
-| **Lourd** · T4 + 1/4 serveur, 4 ans, 50 % (haut) | 2,09 | 1,15 *(provisoire)* | **64 %** |
-| **Lourd** · T4 « petit » + 1/8 serveur, 6 ans, 85 % (bas) | 0,38 | 1,15 *(provisoire)* | 25 % |
-| **Léger** · Colab, 2 vCPU d'un serveur | 0,010 | 0,016 | 39 % |
+| **Lourd** · T4 + 1/4 serveur, 4 ans, 50 % (haut) | 0,42 | 0,23 | **65 %** |
+| **Lourd** · T4 « petit » + 1/8 serveur, 6 ans, 85 % (bas) | 0,077 | 0,23 | 25 % |
+| **Léger** · Colab, 2 vCPU d'un serveur | 0,0074 | 0,0114 | 39 % |
 | **Léger** · PC portable de Ghayth | 0,070 | 0,016 | **82 %** |
 
-(Usage du lourd provisoire : 4 Wh, voir `sensibilite.md`. Le calcul se met à jour avec
-`python -m src.sensibilite` quand les vrais runs seront disponibles.)
+Durées et énergies : 3 runs d'Ons (34 s, 0,791 Wh) et 3 runs d'Ali (9 s, 0,040 Wh), séance 3.
+Sur le coût par point (0,106 g / point sans fabrication), l'amortissement ajoute **+ 34 %** (cas bas,
+0,142 g / point) à **+ 191 %** (cas haut, 0,307 g / point).
 
 ## Analyse
 
@@ -48,8 +49,8 @@ détaillées (c'est justement une raison de l'exclusion).
    l'empreinte réelle d'un facteur 1,3 à 3.
 
 2. **Elle pénalise surtout le modèle lourd en valeur absolue.** Un GPU coûte cher à fabriquer, et le run
-   lourd l'occupe ≈ 15 fois plus longtemps que le run léger n'occupe un CPU. Inclure la fabrication
-   **augmente l'écart** entre les deux modèles, et donc le coût par point (+ 33 % à + 180 %,
+   lourd l'occupe ≈ 4 fois plus longtemps (34 s contre 9 s) que le run léger n'occupe un CPU. Inclure
+   la fabrication **augmente l'écart** entre les deux modèles, et donc le coût par point (+ 34 % à + 191 %,
    voir `sensibilite.md`). Notre conclusion « le léger est plus sobre » est donc **prudente** : la
    réalité est encore plus nette.
 
@@ -74,7 +75,7 @@ détaillées (c'est justement une raison de l'exclusion).
 - **Prolonger la durée de vie du matériel** : passer de 4 à 6 ans réduit d'un tiers la fabrication
   attribuée à chaque heure de calcul.
 - **Dans le rapport, toujours écrire que la fabrication est exclue**, et donner un ordre de grandeur
-  (ex. « + 33 à 180 % »), pour que le lecteur ne prenne pas nos chiffres pour l'empreinte totale.
+  (ex. « + 34 à 191 % »), pour que le lecteur ne prenne pas nos chiffres pour l'empreinte totale.
 
 ## Sources
 
